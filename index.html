@@ -3,34 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Hello World - Tiki Island</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
             min-height: 100vh;
+            background: #1a0a2e;
+            font-family: 'Press Start 2P', monospace;
+            image-rendering: pixelated;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
+        }
+
+        /* ---- CURTAIN ---- */
+        .curtain-left, .curtain-right {
+            position: fixed;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 100;
+            animation: curtainOpen 1.8s ease-in-out 0.5s forwards;
+        }
+        .curtain-left {
+            left: 0;
+            background: repeating-linear-gradient(
+                180deg,
+                #8B0000 0px, #8B0000 8px,
+                #a00000 8px, #a00000 16px,
+                #6b0000 16px, #6b0000 24px
+            );
+            border-right: 8px solid #4a0000;
+            transform: translateX(0);
+        }
+        .curtain-right {
+            right: 0;
+            background: repeating-linear-gradient(
+                180deg,
+                #8B0000 0px, #8B0000 8px,
+                #a00000 8px, #a00000 16px,
+                #6b0000 16px, #6b0000 24px
+            );
+            border-left: 8px solid #4a0000;
+            transform: translateX(0);
+        }
+        @keyframes curtainOpen {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(var(--dir)); }
+        }
+        .curtain-left { --dir: -100%; }
+        .curtain-right { --dir: 100%; }
+
+        /* Curtain rod */
+        .curtain-rod {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 16px;
+            background: #8B6914;
+            border-bottom: 4px solid #6b4f10;
+            z-index: 101;
+        }
+
+        /* ---- SCENE ---- */
+        .scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sky gradient */
+        .sky {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 60%;
+            background: linear-gradient(
+                180deg,
+                #0f0a2a 0%,
+                #1a1045 20%,
+                #2d1b69 40%,
+                #ff6b35 75%,
+                #ff9a56 90%,
+                #ffcc80 100%
+            );
+        }
+
+        /* Stars */
+        .stars {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 40%;
+        }
+        .star {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: #fff;
+            animation: twinkle 2s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* Ocean */
+        .ocean {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 40%;
+            background: linear-gradient(180deg, #0077b6, #023e8a, #001d3d);
+        }
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 20px;
+            top: -10px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 20px,
+                #0096c7 20px,
+                #0096c7 40px,
+                transparent 40px,
+                transparent 60px
+            );
+            animation: waveMove 3s linear infinite;
+        }
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-60px); }
+        }
+
+        /* Sand / beach */
+        .beach {
+            position: absolute;
+            bottom: 35%; left: 0;
+            width: 100%; height: 10%;
+            background: #e8c170;
+            border-top: 4px solid #d4a84b;
+        }
+
+        /* ---- PALM TREE (left) ---- */
+        .palm-left {
+            position: absolute;
+            bottom: 38%;
+            left: 8%;
+            z-index: 10;
+        }
+        .palm-right {
+            position: absolute;
+            bottom: 38%;
+            right: 8%;
+            z-index: 10;
+            transform: scaleX(-1);
+        }
+        .trunk {
+            width: 20px;
+            height: 120px;
+            background: repeating-linear-gradient(
+                180deg,
+                #8B6914 0px, #8B6914 8px,
+                #6b4f10 8px, #6b4f10 16px
+            );
+            margin: 0 auto;
+            border-radius: 2px;
+            position: relative;
+        }
+        .frond {
+            position: absolute;
+            width: 80px;
+            height: 12px;
+            background: #228B22;
+            border-radius: 2px;
+            animation: sway 3s ease-in-out infinite alternate;
+        }
+        .frond::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            width: 100%;
+            height: 4px;
+            background: #1a6b1a;
+        }
+        .frond:nth-child(1) { top: -8px; left: -60px; transform: rotate(-15deg); }
+        .frond:nth-child(2) { top: -8px; right: -60px; transform: rotate(15deg); }
+        .frond:nth-child(3) { top: -2px; left: -70px; transform: rotate(-30deg); }
+        .frond:nth-child(4) { top: -2px; right: -70px; transform: rotate(30deg); }
+        .frond:nth-child(5) { top: 4px; left: -50px; transform: rotate(-45deg); }
+        .frond:nth-child(6) { top: 4px; right: -50px; transform: rotate(45deg); }
+        @keyframes sway {
+            0% { transform: rotate(var(--base-rot)); }
+            100% { transform: rotate(calc(var(--base-rot) + 5deg)); }
+        }
+        .frond:nth-child(1) { --base-rot: -15deg; }
+        .frond:nth-child(2) { --base-rot: 15deg; }
+        .frond:nth-child(3) { --base-rot: -30deg; }
+        .frond:nth-child(4) { --base-rot: 30deg; }
+        .frond:nth-child(5) { --base-rot: -45deg; }
+        .frond:nth-child(6) { --base-rot: 45deg; }
+
+        /* ---- TORCH ---- */
+        .torch-left {
+            position: absolute;
+            bottom: 40%;
+            left: 25%;
+            z-index: 12;
+        }
+        .torch-right {
+            position: absolute;
+            bottom: 40%;
+            right: 25%;
+            z-index: 12;
+        }
+        .torch-pole {
+            width: 12px;
+            height: 80px;
+            background: repeating-linear-gradient(
+                180deg,
+                #8B6914 0px, #8B6914 6px,
+                #a07818 6px, #a07818 12px
+            );
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+        .torch-bowl {
+            width: 28px;
+            height: 16px;
+            background: #5a3e1b;
+            margin: 0 auto;
+            border-radius: 2px;
+            position: relative;
+            border-top: 4px solid #7a5a2b;
+        }
+
+        /* Pixel flame */
+        .flame-container {
+            position: relative;
+            width: 28px;
+            height: 40px;
+            margin: 0 auto;
+        }
+        .flame {
+            position: absolute;
+            bottom: 0;
+            border-radius: 2px;
+        }
+        .flame-core {
+            width: 12px; height: 20px;
+            background: #ffe066;
+            left: 8px; bottom: 4px;
+            animation: flicker1 0.3s infinite alternate;
+        }
+        .flame-mid {
+            width: 20px; height: 28px;
+            background: #ff9500;
+            left: 4px; bottom: 0;
+            animation: flicker2 0.4s infinite alternate;
+            z-index: -1;
+        }
+        .flame-outer {
+            width: 24px; height: 32px;
+            background: #ff4500;
+            left: 2px; bottom: 0;
+            animation: flicker3 0.35s infinite alternate;
+            z-index: -2;
+        }
+        /* Glow */
+        .torch-glow {
+            position: absolute;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(255,150,0,0.3) 0%, transparent 70%);
+            top: -60px; left: -46px;
+            animation: glowPulse 1s infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes flicker1 {
+            0% { height: 20px; opacity: 1; }
+            100% { height: 16px; opacity: 0.9; }
+        }
+        @keyframes flicker2 {
+            0% { height: 28px; }
+            100% { height: 24px; transform: skewX(3deg); }
+        }
+        @keyframes flicker3 {
+            0% { height: 32px; }
+            100% { height: 26px; transform: skewX(-2deg); }
+        }
+        @keyframes glowPulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* ---- TIKI MASK (decorative) ---- */
+        .tiki-mask {
+            position: absolute;
+            bottom: 42%;
+            z-index: 11;
+            width: 40px;
+        }
+        .tiki-mask-left { left: 18%; }
+        .tiki-mask-right { right: 18%; transform: scaleX(-1); }
+        .mask-body {
+            width: 40px;
+            height: 56px;
+            background: #c47f17;
+            border: 4px solid #8B6914;
+            border-radius: 4px;
+            position: relative;
+        }
+        .mask-eye {
+            position: absolute;
+            width: 10px; height: 8px;
+            background: #fff;
+            top: 12px;
+            border: 2px solid #4a3000;
+        }
+        .mask-eye.left { left: 4px; }
+        .mask-eye.right { right: 4px; }
+        .mask-pupil {
+            width: 4px; height: 4px;
+            background: #1a0a00;
+            margin: 0 auto;
+        }
+        .mask-mouth {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            width: 20px;
+            height: 10px;
+            border: 3px solid #4a3000;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            background: #3a1a00;
+        }
+        .mask-brow {
+            position: absolute;
+            top: 4px; left: 4px;
+            width: 28px; height: 4px;
+            background: #8B6914;
+        }
+
+        /* ---- MESSAGE BOX ---- */
+        .message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
             text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 2s forwards;
         }
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 0.5rem;
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
-        p {
-            font-size: 1.25rem;
-            max-width: 500px;
-            line-height: 1.6;
-            opacity: 0.9;
+        .message-box h1 {
+            font-size: 2rem;
+            color: #ffe066;
+            text-shadow:
+                4px 4px 0 #8B0000,
+                -2px -2px 0 #8B0000,
+                2px -2px 0 #8B0000,
+                -2px 2px 0 #8B0000;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+        .message-box p {
+            font-size: 0.65rem;
+            color: #ffcc80;
+            text-shadow: 2px 2px 0 #1a0a2e;
+            line-height: 2;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        /* Bamboo border around message */
+        .bamboo-frame {
+            border: 8px solid #6b4f10;
+            border-radius: 4px;
+            padding: 32px 40px;
+            background: rgba(26, 10, 46, 0.85);
+            box-shadow:
+                inset 0 0 0 4px #8B6914,
+                0 0 60px rgba(255, 150, 0, 0.2);
+            position: relative;
+        }
+        .bamboo-frame::before,
+        .bamboo-frame::after {
+            content: '';
+            position: absolute;
+            width: 8px; height: 8px;
+            background: #a07818;
+            border-radius: 50%;
+        }
+        .bamboo-frame::before { top: -4px; left: -4px; }
+        .bamboo-frame::after { top: -4px; right: -4px; }
+
+        /* ---- COCONUTS on palm ---- */
+        .coconut {
+            width: 12px; height: 12px;
+            background: #5a3e1b;
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #3a2a10;
         }
     </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>Welcome to my very first website. I built this while learning Git and GitHub. Thanks for stopping by!</p>
+    <!-- Curtain -->
+    <div class="curtain-rod"></div>
+    <div class="curtain-left"></div>
+    <div class="curtain-right"></div>
+
+    <div class="scene">
+        <!-- Sky -->
+        <div class="sky">
+            <div class="stars">
+                <div class="star" style="top:5%;left:10%;animation-delay:0.2s"></div>
+                <div class="star" style="top:12%;left:30%;animation-delay:0.8s"></div>
+                <div class="star" style="top:8%;left:55%;animation-delay:0.1s"></div>
+                <div class="star" style="top:15%;left:75%;animation-delay:1.2s"></div>
+                <div class="star" style="top:3%;left:85%;animation-delay:0.5s"></div>
+                <div class="star" style="top:20%;left:45%;animation-delay:1.5s"></div>
+                <div class="star" style="top:6%;left:65%;animation-delay:0.9s"></div>
+                <div class="star" style="top:18%;left:15%;animation-delay:0.3s"></div>
+                <div class="star" style="top:10%;left:90%;animation-delay:1.1s"></div>
+                <div class="star" style="top:2%;left:50%;animation-delay:0.7s"></div>
+            </div>
+        </div>
+
+        <!-- Ocean -->
+        <div class="ocean">
+            <div class="wave"></div>
+        </div>
+
+        <!-- Beach -->
+        <div class="beach"></div>
+
+        <!-- Palm Trees -->
+        <div class="palm-left">
+            <div class="trunk">
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="coconut" style="top:-4px;left:-8px"></div>
+                <div class="coconut" style="top:2px;left:16px"></div>
+                <div class="coconut" style="top:-2px;left:4px"></div>
+            </div>
+        </div>
+        <div class="palm-right">
+            <div class="trunk">
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="frond"></div>
+                <div class="coconut" style="top:-4px;left:-8px"></div>
+                <div class="coconut" style="top:2px;left:16px"></div>
+            </div>
+        </div>
+
+        <!-- Tiki Masks -->
+        <div class="tiki-mask tiki-mask-left">
+            <div class="mask-body">
+                <div class="mask-brow"></div>
+                <div class="mask-eye left"><div class="mask-pupil"></div></div>
+                <div class="mask-eye right"><div class="mask-pupil"></div></div>
+                <div class="mask-mouth"></div>
+            </div>
+        </div>
+        <div class="tiki-mask tiki-mask-right">
+            <div class="mask-body">
+                <div class="mask-brow"></div>
+                <div class="mask-eye left"><div class="mask-pupil"></div></div>
+                <div class="mask-eye right"><div class="mask-pupil"></div></div>
+                <div class="mask-mouth"></div>
+            </div>
+        </div>
+
+        <!-- Torches -->
+        <div class="torch-left">
+            <div class="flame-container">
+                <div class="torch-glow"></div>
+                <div class="flame flame-outer"></div>
+                <div class="flame flame-mid"></div>
+                <div class="flame flame-core"></div>
+            </div>
+            <div class="torch-bowl"></div>
+            <div class="torch-pole"></div>
+        </div>
+        <div class="torch-right">
+            <div class="flame-container">
+                <div class="torch-glow"></div>
+                <div class="flame flame-outer"></div>
+                <div class="flame flame-mid"></div>
+                <div class="flame flame-core"></div>
+            </div>
+            <div class="torch-bowl"></div>
+            <div class="torch-pole"></div>
+        </div>
+
+        <!-- Message -->
+        <div class="message-box">
+            <div class="bamboo-frame">
+                <h1>Hello World!</h1>
+                <p>Welcome to my very first website. I built this while learning Git and GitHub. Thanks for stopping by!</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
